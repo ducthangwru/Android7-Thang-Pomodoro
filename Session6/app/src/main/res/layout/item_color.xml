@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin = "16dp">
+    <View
+        android:id="@+id/v_color"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/shape_task_color"
+        android:scaleType="center"/>
+    <android.support.v7.widget.AppCompatCheckBox
+        android:id="@+id/cb_color"
+        android:theme="@style/checkBoxStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+</FrameLayout>
