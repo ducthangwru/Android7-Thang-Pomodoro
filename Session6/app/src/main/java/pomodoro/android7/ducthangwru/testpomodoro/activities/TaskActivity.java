@@ -1,23 +1,20 @@
 package pomodoro.android7.ducthangwru.testpomodoro.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import butterknife.ButterKnife;
 import pomodoro.android7.ducthangwru.testpomodoro.R;
 import pomodoro.android7.ducthangwru.testpomodoro.fragments.TaskFragment;
-
 public class TaskActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -27,7 +24,6 @@ public class TaskActivity extends AppCompatActivity
         setContentView(R.layout.activity_task);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -37,7 +33,7 @@ public class TaskActivity extends AppCompatActivity
         getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
             public void onBackStackChanged() {
-                if(getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
                     toggle.setDrawerIndicatorEnabled(false);
                     toggle.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24px);
                     toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
@@ -58,7 +54,7 @@ public class TaskActivity extends AppCompatActivity
 
         //setupUI();
 
-        replaceFragment(new TaskFragment(), false);
+        this.replaceFragment(new TaskFragment(), false);
 
         ButterKnife.bind(this);
     }
@@ -122,11 +118,18 @@ public class TaskActivity extends AppCompatActivity
         return true;
     }
 
-    public void replaceFragment(Fragment fragment, boolean addToBackstack) {
-        if (addToBackstack) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fl_main, fragment).addToBackStack(null).commit();
+    public void replaceFragment(Fragment fragment, Boolean addToBackStack) {
+        if (addToBackStack) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fl_main, fragment)
+                    .addToBackStack(null)
+                    .commit();
         } else {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fl_main, fragment).commit();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fl_main, fragment)
+                    .commit();
         }
     }
 }

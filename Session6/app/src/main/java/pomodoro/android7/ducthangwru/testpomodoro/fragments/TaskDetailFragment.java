@@ -50,7 +50,5 @@ public class TaskDetailFragment extends Fragment {
         ButterKnife.bind(this, view);
         rv_color.setAdapter(colorAdapter);
         rv_color.setLayoutManager(new GridLayoutManager(this.getContext(), 4));
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this.getContext(), DividerItemDecoration.VERTICAL);
-        rv_color.addItemDecoration(dividerItemDecoration);
     }
 }

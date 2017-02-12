@@ -23,6 +23,7 @@ public class TaskFragment extends Fragment {
     RecyclerView rvTask;
     TaskAdapter taskAdapter;
 
+    FragmentListenner fragmentListenner;
 
     @Nullable
     @Override
@@ -43,6 +44,6 @@ public class TaskFragment extends Fragment {
 
     @OnClick(R.id.fab)
     void onFabClick() {
-        ((TaskActivity)getActivity()).replaceFragment(new TaskDetailFragment(), true);
+        fragmentListenner.replaceFragment(new TaskDetailFragment(), true);
     }
 }
