@@ -14,9 +14,12 @@ import android.view.View;
 
 import butterknife.ButterKnife;
 import pomodoro.android7.ducthangwru.testpomodoro.R;
+import pomodoro.android7.ducthangwru.testpomodoro.fragments.FragmentListenner;
 import pomodoro.android7.ducthangwru.testpomodoro.fragments.TaskFragment;
 public class TaskActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, FragmentListenner {
+
+    private TaskFragment taskFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,9 +56,9 @@ public class TaskActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         //setupUI();
-
-        this.replaceFragment(new TaskFragment(), false);
-
+        taskFragment = new TaskFragment();
+        this.replaceFragment(taskFragment,false);
+        taskFragment.setReplace(this);
         ButterKnife.bind(this);
     }
 
@@ -118,7 +121,7 @@ public class TaskActivity extends AppCompatActivity
         return true;
     }
 
-    public void replaceFragment(Fragment fragment, Boolean addToBackStack) {
+    public void replaceFragment(Fragment fragment, boolean addToBackStack) {
         if (addToBackStack) {
             getSupportFragmentManager()
                     .beginTransaction()

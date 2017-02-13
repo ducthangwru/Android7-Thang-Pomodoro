@@ -1,6 +1,5 @@
 package pomodoro.android7.ducthangwru.testpomodoro.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,10 +14,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import pomodoro.android7.ducthangwru.testpomodoro.R;
-import pomodoro.android7.ducthangwru.testpomodoro.activities.TaskActivity;
 import pomodoro.android7.ducthangwru.testpomodoro.adapters.TaskAdapter;
 
-public class TaskFragment extends Fragment {
+public class TaskFragment extends Fragment{
     @BindView(R.id.rv_task)
     RecyclerView rvTask;
     TaskAdapter taskAdapter;
@@ -45,5 +43,10 @@ public class TaskFragment extends Fragment {
     @OnClick(R.id.fab)
     void onFabClick() {
         fragmentListenner.replaceFragment(new TaskDetailFragment(), true);
+        setReplace(fragmentListenner);
+    }
+
+    public void setReplace(FragmentListenner fragmentListenner) {
+        this.fragmentListenner = fragmentListenner;
     }
 }
