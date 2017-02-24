@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by DUC THANG on 1/19/2017.
  */
 
-public class RegisterRespoinseJson {
+public class RegisterResponseJson {
     @SerializedName("code")
     private int code;
     @SerializedName("message")
@@ -14,7 +14,7 @@ public class RegisterRespoinseJson {
     @SerializedName("token")
     private String token;
 
-    public RegisterRespoinseJson(int code, String message, String token) {
+    public RegisterResponseJson(int code, String message, String token) {
         this.code = code;
         this.message = message;
         this.token = token;

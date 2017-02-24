@@ -9,7 +9,6 @@ public class LoginCredendials {
     private String password;
     private String accessToken;
 
-
     public LoginCredendials(String username, String password, String accessToken) {
         this.username = username;
         this.password = password;

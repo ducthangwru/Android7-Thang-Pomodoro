@@ -1,5 +1,9 @@
 package pomodoro.android7.ducthangwru.testpomodoro.databases.models;
 
+import com.google.gson.annotations.SerializedName;
+
+import butterknife.BindView;
+
 /**
  * Created by DUC THANG on 2/8/2017.
  */
@@ -9,16 +13,14 @@ public class Task {
     private String color;
     private float paymentPerHour;
     private boolean isDone;
+    @SerializedName("local_id")
+    private String local_id;
 
-    public Task(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
-
-    public Task(String name, String color, float paymentPerHour) {
+    public Task(String name, String color, float paymentPerHour, String id) {
         this.name = name;
         this.color = color;
         this.paymentPerHour = paymentPerHour;
+        this.local_id = id;
         this.isDone = false;
     }
 
@@ -54,12 +56,22 @@ public class Task {
         isDone = done;
     }
 
+    public String getLocal_id() {
+        return local_id;
+    }
+
+    public void setLocal_id(String local_id) {
+        this.local_id = local_id;
+    }
+
     @Override
     public String toString() {
         return "Task{" +
                 "name='" + name + '\'' +
                 ", color='" + color + '\'' +
                 ", paymentPerHour=" + paymentPerHour +
+                ", isDone=" + isDone +
+                ", local_id='" + local_id + '\'' +
                 '}';
     }
 

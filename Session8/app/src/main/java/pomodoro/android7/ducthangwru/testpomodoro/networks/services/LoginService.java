@@ -1,7 +1,7 @@
 package pomodoro.android7.ducthangwru.testpomodoro.networks.services;
 
 import okhttp3.RequestBody;
-import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.LoginRespoinseJson;
+import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.LoginResponseJson;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
@@ -12,5 +12,5 @@ import retrofit2.http.POST;
 
 public interface LoginService {
     @POST("login")
-    Call<LoginRespoinseJson> login(@Body RequestBody body);
+    Call<LoginResponseJson> login(@Body RequestBody body);
 }

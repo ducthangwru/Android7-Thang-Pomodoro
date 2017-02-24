@@ -13,5 +13,5 @@ import retrofit2.http.POST;
 
 public interface AddNewTaskServices {
     @POST("task")
-    Call<Task> addTask(@Header("Content-Type") String type, @Header("Authorization") String token, @Body Task requestBody);
+    Call<Task> addTask(@Header("Content-Type") String type, @Header("Authorization") String token, @Body RequestBody requestBody);
 }

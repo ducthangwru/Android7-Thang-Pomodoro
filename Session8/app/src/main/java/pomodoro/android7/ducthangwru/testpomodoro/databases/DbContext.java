@@ -39,7 +39,8 @@ public class DbContext {
         for (int i = 0; i < tasks.size(); i++) {
             if (task.getColor().equals(tasks.get(i).getColor())
                     && task.getName().equals(tasks.get(i).getName())
-                    && task.getPaymentPerHour() == tasks.get(i).getPaymentPerHour()) {
+                    && task.getPaymentPerHour() == tasks.get(i).getPaymentPerHour()
+                    && task.getLocal_id().equals(tasks.get(i).getLocal_id())) {
                 return i;
             }
         }

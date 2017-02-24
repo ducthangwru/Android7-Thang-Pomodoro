@@ -15,12 +15,18 @@ import pomodoro.android7.ducthangwru.testpomodoro.databases.models.Task;
  */
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder>{
+    public int selection;
+
     public interface TaskItemClickListener {
         void onItemClick(Task task);
     }
 
     public interface ButtonPlayClickListener{
         void onButtonClick(Task task);
+    }
+
+    public interface TaskItemLongClickListener {
+        void onItemLongClick(Task task);
     }
     private ButtonPlayClickListener buttonPlayClickListener;
 
@@ -32,6 +38,20 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder>{
 
     public void setTaskItemClickListener(TaskItemClickListener taskItemClickListener) {
         this.taskItemClickListener = taskItemClickListener;
+    }
+
+    private TaskItemLongClickListener taskItemLongClickListener;
+    public void setTaskItemLongClickListener(TaskItemLongClickListener taskItemLongClickListener) {
+        this.taskItemLongClickListener = taskItemLongClickListener;
+    }
+
+    public int getSelection() {
+        return selection;
+    }
+
+
+    private void selection(int position) {
+        selection = position;
     }
 
     @Override
@@ -47,7 +67,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder>{
     }
 
     @Override
-    public void onBindViewHolder(TaskViewHolder holder, int position) {
+    public void onBindViewHolder(TaskViewHolder holder, final int position) {
         //1: Get data based on position
         final Task task = DbContext.instance.allTasks().get(position);
 
@@ -78,7 +98,20 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder>{
                 notifyDataSetChanged();
             }
         });
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if(taskItemLongClickListener != null) {
+                    taskItemLongClickListener.onItemLongClick(task);
+                    selection(position);
+                    return true;
+                }
+                return false;
+            }
+        });
     }
+
 
     @Override
     public int getItemCount() {

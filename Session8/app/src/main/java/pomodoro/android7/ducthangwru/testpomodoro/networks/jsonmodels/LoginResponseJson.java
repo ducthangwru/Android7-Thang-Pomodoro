@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by DUC THANG on 1/18/2017.
  */
 
-public class LoginRespoinseJson {
+public class LoginResponseJson {
     @SerializedName("access_token")
     private String token;
 

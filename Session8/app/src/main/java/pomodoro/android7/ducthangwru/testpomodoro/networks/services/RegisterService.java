@@ -1,8 +1,7 @@
 package pomodoro.android7.ducthangwru.testpomodoro.networks.services;
 
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.RegisterRespoinseJson;
+import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.RegisterResponseJson;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
@@ -13,5 +12,5 @@ import retrofit2.http.POST;
 
 public interface RegisterService {
     @POST("register")
-    Call<RegisterRespoinseJson> register (@Body RequestBody body);
+    Call<RegisterResponseJson> register (@Body RequestBody body);
 }

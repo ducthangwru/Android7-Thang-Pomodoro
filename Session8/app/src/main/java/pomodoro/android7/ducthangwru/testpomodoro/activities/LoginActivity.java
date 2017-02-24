@@ -23,11 +23,11 @@ import okhttp3.RequestBody;
 import pomodoro.android7.ducthangwru.testpomodoro.R;
 import pomodoro.android7.ducthangwru.testpomodoro.databases.DbContext;
 import pomodoro.android7.ducthangwru.testpomodoro.databases.models.Task;
-import pomodoro.android7.ducthangwru.testpomodoro.networks.NetRetrofit;
+import pomodoro.android7.ducthangwru.testpomodoro.networks.NetContext;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.LoginBodyJson;
-import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.LoginRespoinseJson;
+import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.LoginResponseJson;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.RegisterBodyJson;
-import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.RegisterRespoinseJson;
+import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.RegisterResponseJson;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.services.GetAllTaskServices;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.services.LoginService;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.services.RegisterService;
@@ -36,8 +36,6 @@ import pomodoro.android7.ducthangwru.testpomodoro.settings.SharePrefs;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.toString();
@@ -49,7 +47,6 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputLayout tilPassword;
     private ProgressBar pbLoading;
 
-    Retrofit retrofit;
     private String username;
     private String password;
     private String token;
@@ -94,13 +91,8 @@ public class LoginActivity extends AppCompatActivity {
     private void sendLogin(String username, String password) {
         pbLoading.setVisibility(View.VISIBLE);
         //1. Create retrofit
-        retrofit = new Retrofit.Builder()
-                .baseUrl("http://a-task.herokuapp.com/api/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
         //2 Create Service
-        LoginService loginService = NetRetrofit.instance.getRetrofit().create(LoginService.class);
+        LoginService loginService = NetContext.instance.getRetrofit().create(LoginService.class);
         //data & format
         //format ==> MediaType
         //data ==> json
@@ -111,17 +103,19 @@ public class LoginActivity extends AppCompatActivity {
         final RequestBody loginBody = RequestBody.create(jsonType, loginJson);
 
         //3. Create Call
-        Call<LoginRespoinseJson> loginCall = loginService.login(loginBody);
-        loginCall.enqueue(new Callback<LoginRespoinseJson>() {
+        Call<LoginResponseJson> loginCall = loginService.login(loginBody);
+        loginCall.enqueue(new Callback<LoginResponseJson>() {
             @Override
-            public void onResponse(Call<LoginRespoinseJson> call, Response<LoginRespoinseJson> response) {
-                LoginRespoinseJson loginRespoinseJson = response.body();
-                if (loginRespoinseJson == null) {
+            public void onResponse(Call<LoginResponseJson> call, Response<LoginResponseJson> response) {
+                LoginResponseJson loginResponseJson = response.body();
+                if (loginResponseJson == null) {
                     Log.d(TAG, "onResponse: Could not parse body");
                 } else {
-                    Log.d(TAG, String.format("onResponse: =))))  %s", loginRespoinseJson));
+                    Log.d(TAG, String.format("onResponse: =))))  %s", loginResponseJson));
                     if (response.code() == 200) {
-                        token = loginRespoinseJson.getToken();
+                        //loginResponseJson.setToken(SharePrefs.getInstance().getAccessToken());
+                        token = loginResponseJson.getToken();
+                        Log.d(TAG, String.format("%s abcd", token));
                         getDataTasks();
                         onLoginSuccess();
                     }
@@ -131,41 +125,36 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<LoginRespoinseJson> call, Throwable t) {
+            public void onFailure(Call<LoginResponseJson> call, Throwable t) {
                 Log.d(TAG, String.format("onFailure: %s", t));
             }
         });
     }
 
     private void sentRegister(String username, String password) {
-        retrofit = new Retrofit.Builder()
-                .baseUrl("http://a-task.herokuapp.com/api/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        RegisterService registerService = NetRetrofit.instance.getRetrofit().create(RegisterService.class);
+        RegisterService registerService = NetContext.instance.getRetrofit().create(RegisterService.class);
 
         MediaType jsonType = MediaType.parse("application/json");
         String registerJson = (new Gson()).toJson(new RegisterBodyJson(username, password));
 
         final RequestBody registerBody = RequestBody.create(jsonType, registerJson);
 
-        registerService.register(registerBody).enqueue(new Callback<RegisterRespoinseJson>() {
+        registerService.register(registerBody).enqueue(new Callback<RegisterResponseJson>() {
 
             @Override
-            public void onResponse(Call<RegisterRespoinseJson> call, Response<RegisterRespoinseJson> response) {
-                RegisterRespoinseJson registerRespoinseJson = response.body();
-                if (registerRespoinseJson == null) {
+            public void onResponse(Call<RegisterResponseJson> call, Response<RegisterResponseJson> response) {
+                RegisterResponseJson registerResponseJson = response.body();
+                if (registerResponseJson == null) {
                     Log.d(TAG, "onResponse: Could not parse body");
                     Toast.makeText(LoginActivity.this, "Register Failed!", Toast.LENGTH_SHORT).show();
                 } else {
-                    Log.d(TAG, String.format("onResponse: Register Success %s", registerRespoinseJson));
+                    Log.d(TAG, String.format("onResponse: Register Success %s", registerResponseJson));
                     Toast.makeText(LoginActivity.this, "Register Success", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<RegisterRespoinseJson> call, Throwable t) {
+            public void onFailure(Call<RegisterResponseJson> call, Throwable t) {
                 Log.d(TAG, "onResponse: not Connected!!");
                 Toast.makeText(LoginActivity.this, "Register Failed! Not Connected!", Toast.LENGTH_SHORT).show();
             }
@@ -203,7 +192,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void getDataTasks(){
-        GetAllTaskServices getAllTaskServices = NetRetrofit.instance.getRetrofit().create(GetAllTaskServices.class);
+        GetAllTaskServices getAllTaskServices = NetContext.instance.getRetrofit().create(GetAllTaskServices.class);
         getAllTaskServices.getTasks("JWT "+token).enqueue(new Callback<List<Task>>() {
             @Override
             public void onResponse(Call<List<Task>> call, Response<List<Task>> response) {
