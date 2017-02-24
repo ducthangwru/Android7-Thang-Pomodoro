@@ -174,7 +174,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void onLoginSuccess() {
-        SharePrefs.getInstance().put(new LoginCredendials(username, password));
+        SharePrefs.getInstance().put(new LoginCredendials(username, password, token));
         Toast.makeText(this, "Logged in", Toast.LENGTH_SHORT).show();
         gotoTaskActivity();
     }

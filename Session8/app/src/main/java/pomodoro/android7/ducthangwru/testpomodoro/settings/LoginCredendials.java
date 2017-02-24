@@ -10,11 +10,6 @@ public class LoginCredendials {
     private String accessToken;
 
 
-    public LoginCredendials(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
-
     public LoginCredendials(String username, String password, String accessToken) {
         this.username = username;
         this.password = password;
