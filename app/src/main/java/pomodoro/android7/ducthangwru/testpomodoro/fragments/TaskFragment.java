@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,67 +15,111 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import pomodoro.android7.ducthangwru.testpomodoro.R;
+import pomodoro.android7.ducthangwru.testpomodoro.actions.AddAction;
+import pomodoro.android7.ducthangwru.testpomodoro.actions.EditAction;
 import pomodoro.android7.ducthangwru.testpomodoro.activities.TaskActivity;
 import pomodoro.android7.ducthangwru.testpomodoro.adapters.TaskAdapter;
 import pomodoro.android7.ducthangwru.testpomodoro.databases.DbContext;
 import pomodoro.android7.ducthangwru.testpomodoro.databases.models.Task;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.NetContext;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.DeleteJson;
+import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.TaskJson;
+import pomodoro.android7.ducthangwru.testpomodoro.networks.services.AddNewTaskServices;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.services.DeleteTaskServices;
+import pomodoro.android7.ducthangwru.testpomodoro.networks.services.GetAllTaskServices;
+import pomodoro.android7.ducthangwru.testpomodoro.settings.SharePrefs;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class TaskFragment extends Fragment{
+public class TaskFragment extends Fragment {
     @BindView(R.id.rv_task)
     RecyclerView rvTask;
-    TaskAdapter taskAdapter;
-
-    FragmentListenner fragmentListenner;
+    private TaskAdapter taskAdapter = new TaskAdapter();
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View  view = inflater.inflate(R.layout.fragment_task, container, false);
+        View view = inflater.inflate(R.layout.fragment_task, container, false);
         setupUI(view);
+        downloadTasks();
         return view;
+    }
+
+    private void downloadTasks() {
     }
 
     private void setupUI(View view) {
         ButterKnife.bind(this, view);
-        taskAdapter = new TaskAdapter();
         rvTask.setAdapter(taskAdapter);
+        rvTask.setLayoutManager(new LinearLayoutManager(this.getContext()));
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Tasks");
+        //add line to recycler view
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this.getContext(), DividerItemDecoration.VERTICAL);
+        rvTask.addItemDecoration(dividerItemDecoration);
         setHasOptionsMenu(true);
+        //design parttern observer
         taskAdapter.setTaskItemClickListener(new TaskAdapter.TaskItemClickListener() {
             @Override
-            public void onItemClick(Task task) {
+            public void onItemClick(TaskJson taskJson) {
                 TaskDetailFragment taskDetailFragment = new TaskDetailFragment();
+                //lam sao de 2 th nay doc lap voi nhau
+                taskDetailFragment.setTaskAction(new EditAction());
                 taskDetailFragment.setTitle("Edit Task");
-                taskDetailFragment.setTask(task);
-                taskDetailFragment.setPosition(DbContext.instance.getPosition(task));
-                fragmentListenner.replaceFragment(taskDetailFragment, true);
-                setReplace(fragmentListenner);
+                taskDetailFragment.setTask(taskJson);
+                taskDetailFragment.setPosition(DbContext.instance.getPosition(taskJson));
+                (new SceneFragment(getActivity().getSupportFragmentManager(), R.id.fl_main)).replaceFragment(taskDetailFragment, true);
             }
         });
+        taskAdapter.setButtonPlayClickListener(new TaskAdapter.ButtonPlayClickListener() {
+            @Override
+            public void onButtonClick(TaskJson task) {
+                TimeFragment timerFragment = new TimeFragment();
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(task.getName() + " Timer");
+                (new SceneFragment(getActivity().getSupportFragmentManager(), R.id.fl_main)).replaceFragment(timerFragment, true);
+            }
+        });
+        taskAdapter.setDeleteTaskListener(new TaskAdapter.DeleteTaskListener() {
+            @Override
+            public void deleteTask(int position) {
+                showDialog(position);
+            }
+        });
+    }
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext());
-
-        builder.setTitle("Confirm");
-        builder.setMessage("Are you sure?");
-
-        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-
+    private void showDialog(final int position) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+        dialog.setTitle("DELETE");
+        dialog.setMessage("Are you sure?");
+        dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
             public void onClick(DialogInterface dialog, int which) {
-                DeleteTaskServices deleteService = NetContext.instance.getRetrofit().create(DeleteTaskServices.class);
+                delete(position);
+            }
+        });
+        dialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        dialog.create().show();
+    }
 
-                deleteService.deleteTask(DbContext.instance.allTasks().get(taskAdapter.getSelection()).getLocal_id()).enqueue(new Callback<DeleteJson>() {
+    private void delete(int position) {
+        AddNewTaskServices addNewTask = NetContext.instance.getRetrofit().create(AddNewTaskServices.class);
+        TaskJson task = DbContext.instance.allTasks().get(position);
+        DbContext.instance.allTasks().remove(position);
+        addNewTask.deleteTask("http://a-task.herokuapp.com/api/task/" + task.getLocalID(),
+                "JWT " + SharePrefs.getInstance().getAccessToken())
+                .enqueue(new Callback<DeleteJson>() {
                     @Override
-                    public void onResponse(Call<DeleteJson> call, Response<DeleteJson> response) {
-                        DbContext.instance.allTasks().remove(taskAdapter.getSelection());
+                    public void onResponse(Call<DeleteJson> call, retrofit2.Response<DeleteJson> response) {
                         taskAdapter.notifyDataSetChanged();
-
                     }
 
                     @Override
@@ -82,59 +127,13 @@ public class TaskFragment extends Fragment{
 
                     }
                 });
-
-                dialog.dismiss();
-            }
-        });
-
-        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                // Do nothing
-                dialog.dismiss();
-            }
-        });
-
-
-
-        taskAdapter.setTaskItemLongClickListener(new TaskAdapter.TaskItemLongClickListener() {
-            @Override
-            public void onItemLongClick(Task task) {
-                AlertDialog alert = builder.create();
-                alert.show();
-            }
-        });
-
-        taskAdapter.setButtonPlayClickListener(new TaskAdapter.ButtonPlayClickListener() {
-            @Override
-            public void onButtonClick(Task task) {
-                TimeFragment timeFragment = new TimeFragment();
-                timeFragment.setTittle("Timer");
-                fragmentListenner.replaceFragment(timeFragment, true);
-                setReplace(fragmentListenner);
-            }
-        });
-
-        if(getActivity() instanceof TaskActivity) {
-            ((TaskActivity) getActivity()).getSupportActionBar().setTitle("Tasks");
-        }
-
-        rvTask.setLayoutManager(new LinearLayoutManager(this.getContext()));
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this.getContext(), DividerItemDecoration.VERTICAL);
-        rvTask.addItemDecoration(dividerItemDecoration);
     }
 
     @OnClick(R.id.fab)
     void onFabClick() {
         TaskDetailFragment taskDetailFragment = new TaskDetailFragment();
-        taskDetailFragment.setTitle("Add new task");
-        fragmentListenner.replaceFragment(taskDetailFragment, true);
-        setReplace(fragmentListenner);
-    }
-
-    public void setReplace(FragmentListenner fragmentListenner) {
-        this.fragmentListenner = fragmentListenner;
+        taskDetailFragment.setTaskAction(new AddAction());
+        taskDetailFragment.setTitle("Add new Task");
+        (new SceneFragment(getActivity().getSupportFragmentManager(), R.id.fl_main)).replaceFragment(taskDetailFragment, true);
     }
 }

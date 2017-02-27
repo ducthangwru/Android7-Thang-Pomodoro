@@ -5,6 +5,7 @@ import android.util.Log;
 
 import pomodoro.android7.ducthangwru.testpomodoro.databases.DbContext;
 import pomodoro.android7.ducthangwru.testpomodoro.databases.models.Task;
+import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.TaskJson;
 import pomodoro.android7.ducthangwru.testpomodoro.settings.SharePrefs;
 
 /**
@@ -20,7 +21,7 @@ public class PomodoroApplication extends Application {
         Log.d(TAG, "OnCreate!");
         SharePrefs.init(this);
 
-        for (Task task : DbContext.instance.allTasks()) {
+        for (TaskJson task : DbContext.instance.allTasks()) {
             Log.d(TAG, String.format("onCreate: %s", task));
         }
     }

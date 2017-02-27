@@ -3,6 +3,7 @@ package pomodoro.android7.ducthangwru.testpomodoro.networks.services;
 import java.util.List;
 
 import pomodoro.android7.ducthangwru.testpomodoro.databases.models.Task;
+import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.TaskJson;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
@@ -13,5 +14,5 @@ import retrofit2.http.Header;
 
 public interface GetAllTaskServices {
     @GET("task")
-    Call<List<Task>> getTasks(@Header("Authorization") String token);
+    Call<List<TaskJson>> getTasks(@Header("Authorization") String token);
 }

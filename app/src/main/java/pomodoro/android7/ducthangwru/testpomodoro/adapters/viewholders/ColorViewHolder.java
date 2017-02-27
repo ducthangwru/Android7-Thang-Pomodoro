@@ -1,5 +1,7 @@
 package pomodoro.android7.ducthangwru.testpomodoro.adapters.viewholders;
 
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -23,13 +25,16 @@ public class ColorViewHolder extends RecyclerView.ViewHolder {
         ButterKnife.bind(this,itemView);
     }
     public void bind(String color){
-        Utils.setSolidColor(v_color, color);
+        //1: Bind color
+        GradientDrawable drawable = (GradientDrawable)v_color.getBackground();
+        drawable.setColor(Color.parseColor(color));
     }
 
-    public void setCheck(boolean check) {
-        if(check) {
+    public void setCheck(boolean check){
+        if(check){
             ivCheck.setVisibility(View.VISIBLE);
-        } else {
+        }
+        else{
             ivCheck.setVisibility(View.INVISIBLE);
         }
     }

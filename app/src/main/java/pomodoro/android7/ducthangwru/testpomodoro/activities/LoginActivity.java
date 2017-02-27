@@ -28,6 +28,7 @@ import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.LoginBodyJ
 import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.LoginResponseJson;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.RegisterBodyJson;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.RegisterResponseJson;
+import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.TaskJson;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.services.GetAllTaskServices;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.services.LoginService;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.services.RegisterService;
@@ -46,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputLayout tilUsername;
     private TextInputLayout tilPassword;
     private ProgressBar pbLoading;
+    private MediaType jsonType = MediaType.parse("application/json");
 
     private String username;
     private String password;
@@ -55,6 +57,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         etUsername = (EditText) this.findViewById(R.id.et_username);
         etPassword = (EditText) this.findViewById(R.id.et_password);
         btRegister = (Button) this.findViewById(R.id.bt_register);
@@ -94,71 +97,72 @@ public class LoginActivity extends AppCompatActivity {
         //2 Create Service
         LoginService loginService = NetContext.instance.getRetrofit().create(LoginService.class);
         //data & format
-        //format ==> MediaType
-        //data ==> json
-
-
-        MediaType jsonType = MediaType.parse("application/json");
         String loginJson = (new Gson()).toJson(new LoginBodyJson(username, password));
-        final RequestBody loginBody = RequestBody.create(jsonType, loginJson);
-
-        //3. Create Call
+        RequestBody loginBody = RequestBody.create(jsonType, loginJson);
+        //create Call
         Call<LoginResponseJson> loginCall = loginService.login(loginBody);
         loginCall.enqueue(new Callback<LoginResponseJson>() {
             @Override
             public void onResponse(Call<LoginResponseJson> call, Response<LoginResponseJson> response) {
                 LoginResponseJson loginResponseJson = response.body();
                 if (loginResponseJson == null) {
-                    Log.d(TAG, "onResponse: Could not parse body");
+                    pbLoading.setVisibility(View.GONE);
+                    if(response.code()==401){
+                        Toast.makeText(LoginActivity.this, "error password", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    Log.d(TAG, String.format("onResponse: =))))  %s", loginResponseJson));
+
                     if (response.code() == 200) {
-                        //loginResponseJson.setToken(SharePrefs.getInstance().getAccessToken());
+                        Log.d(TAG, String.format("%s", loginResponseJson));
                         token = loginResponseJson.getToken();
-                        Log.d(TAG, String.format("%s abcd", token));
+                        pbLoading.setVisibility(View.GONE);
                         getDataTasks();
                         onLoginSuccess();
                     }
                 }
-                Log.d(TAG, "onResponse");
-                pbLoading.setVisibility(View.GONE);
             }
 
             @Override
             public void onFailure(Call<LoginResponseJson> call, Throwable t) {
-                Log.d(TAG, String.format("onFailure: %s", t));
+                Log.d(TAG, String.format("onFailure %s", t));
+                pbLoading.setVisibility(View.GONE);
             }
         });
     }
 
     private void sentRegister(String username, String password) {
-        RegisterService registerService = NetContext.instance.getRetrofit().create(RegisterService.class);
+        RegisterService registerSevice = NetContext.instance.getRetrofit().create(RegisterService.class);
 
-        MediaType jsonType = MediaType.parse("application/json");
         String registerJson = (new Gson()).toJson(new RegisterBodyJson(username, password));
+        Log.d(TAG, String.format("%s", registerJson));
+        RequestBody registerBody = RequestBody.create(jsonType, registerJson);
+        Log.d(TAG, String.format("sendRegister: %s", registerBody));
+        registerSevice.register(registerBody)
+                .enqueue(new Callback<RegisterResponseJson>() {
+                    @Override
+                    public void onResponse(Call<RegisterResponseJson> call, Response<RegisterResponseJson> response) {
+                        Log.d(TAG, "onResponse Code: " + response.code());
+                        //ban dau em de la 400 cung k chay?
+                        RegisterResponseJson registerResponse = response.body();
+                        Log.d(TAG, String.format("onResponse: %s", registerResponse));
+                        if (registerResponse == null) {
+                            if (response.code() == 400) {
+                                Toast.makeText(LoginActivity.this, "This account has already existed!", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(LoginActivity.this, "register fail", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            if (response.code() == 200) {
+                                Toast.makeText(LoginActivity.this, "Register success!", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
 
-        final RequestBody registerBody = RequestBody.create(jsonType, registerJson);
-
-        registerService.register(registerBody).enqueue(new Callback<RegisterResponseJson>() {
-
-            @Override
-            public void onResponse(Call<RegisterResponseJson> call, Response<RegisterResponseJson> response) {
-                RegisterResponseJson registerResponseJson = response.body();
-                if (registerResponseJson == null) {
-                    Log.d(TAG, "onResponse: Could not parse body");
-                    Toast.makeText(LoginActivity.this, "Register Failed!", Toast.LENGTH_SHORT).show();
-                } else {
-                    Log.d(TAG, String.format("onResponse: Register Success %s", registerResponseJson));
-                    Toast.makeText(LoginActivity.this, "Register Success", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<RegisterResponseJson> call, Throwable t) {
-                Log.d(TAG, "onResponse: not Connected!!");
-                Toast.makeText(LoginActivity.this, "Register Failed! Not Connected!", Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onFailure(Call<RegisterResponseJson> call, Throwable t) {
+                        Toast.makeText(LoginActivity.this, "Register Fail!", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
     }
 
@@ -191,26 +195,6 @@ public class LoginActivity extends AppCompatActivity {
         return false;
     }
 
-    private void getDataTasks(){
-        GetAllTaskServices getAllTaskServices = NetContext.instance.getRetrofit().create(GetAllTaskServices.class);
-        getAllTaskServices.getTasks("JWT "+token).enqueue(new Callback<List<Task>>() {
-            @Override
-            public void onResponse(Call<List<Task>> call, Response<List<Task>> response) {
-                for(Task task : response.body()){
-                    if(task.getColor() != null) {
-                        DbContext.instance.addTask(task);
-                    }
-                    Log.d(TAG, String.format("onResponse: %s", task ));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Task>> call, Throwable t) {
-
-            }
-        });
-    }
-
     private void gotoTaskActivity() {
         Intent intent = new Intent(this, TaskActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -221,6 +205,27 @@ public class LoginActivity extends AppCompatActivity {
         if (SharePrefs.getInstance().get() != null) {
             gotoTaskActivity();
         }
+    }
+
+    private void getDataTasks(){
+        GetAllTaskServices getTaskService = NetContext.instance.getRetrofit().create(GetAllTaskServices.class);
+        getTaskService.getTasks("JWT "+token).enqueue(new Callback<List<TaskJson>>() {
+            @Override
+            public void onResponse(Call<List<TaskJson>> call, Response<List<TaskJson>> response) {
+                for(TaskJson taskJson : response.body()){
+                    Log.d(TAG, String.format("onResponse: %s",taskJson ));
+                    if(taskJson.getColor() != null) {
+                        DbContext.instance.addTask(taskJson);
+
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<TaskJson>> call, Throwable t) {
+
+            }
+        });
     }
 
 

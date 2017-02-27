@@ -9,20 +9,20 @@ import butterknife.BindView;
  */
 
 public class Task {
+    @SerializedName("name")
     private String name;
-    private String color;
-    private float paymentPerHour;
-    private boolean isDone;
-    @SerializedName("local_id")
-    private String local_id;
 
-    public Task(String name, String color, float paymentPerHour, String id) {
-        this.name = name;
-        this.color = color;
-        this.paymentPerHour = paymentPerHour;
-        this.local_id = id;
-        this.isDone = false;
-    }
+    @SerializedName("payment_per_hour")
+    private float paymentPerHour;
+
+    @SerializedName("color")
+    private String color;
+
+    @SerializedName("done")
+    private boolean done;
+
+    @SerializedName("local_id")
+    private String localID;
 
     public float getPaymentPerHour() {
         return paymentPerHour;
@@ -30,6 +30,34 @@ public class Task {
 
     public void setPaymentPerHour(float paymentPerHour) {
         this.paymentPerHour = paymentPerHour;
+    }
+
+    public Task(String name, String color, float paymentPerHour) {
+
+        this.name = name;
+        this.color = color;
+        this.paymentPerHour = paymentPerHour;
+    }
+
+    public Task(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
+
+    public boolean isCheck() {
+        return done;
+    }
+
+    public void setCheck(boolean done) {
+        done = done;
+    }
+
+    public Task(String name, String color, float paymentPerHour, boolean isDone) {
+
+        this.name = name;
+        this.color = color;
+        this.paymentPerHour = paymentPerHour;
+        this.done = isDone;
     }
 
     public String getName() {
@@ -48,34 +76,17 @@ public class Task {
         this.color = color;
     }
 
-    public boolean isDone() {
-        return isDone;
-    }
-
-    public void setDone(boolean done) {
-        isDone = done;
-    }
-
-    public String getLocal_id() {
-        return local_id;
-    }
-
-    public void setLocal_id(String local_id) {
-        this.local_id = local_id;
-    }
-
     @Override
     public String toString() {
         return "Task{" +
                 "name='" + name + '\'' +
-                ", color='" + color + '\'' +
                 ", paymentPerHour=" + paymentPerHour +
-                ", isDone=" + isDone +
-                ", local_id='" + local_id + '\'' +
+                ", color='" + color + '\'' +
+                ", done=" + done +
                 '}';
     }
 
-    public void flipDone() {
-        isDone = !isDone;
+    public String getLocalID() {
+        return localID;
     }
 }

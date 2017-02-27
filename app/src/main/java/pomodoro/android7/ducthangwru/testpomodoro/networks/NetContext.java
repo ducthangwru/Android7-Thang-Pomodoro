@@ -14,6 +14,7 @@ import okhttp3.ResponseBody;
 import okio.Buffer;
 import okio.BufferedSource;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.services.LoginService;
+import pomodoro.android7.ducthangwru.testpomodoro.settings.SharePrefs;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -22,51 +23,59 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class NetContext {
-    private static final String TAG = NetContext.class.toString();
     private Retrofit retrofit;
     private NetContext() {
-
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(new LoggerInterceptor()).build();
-
+        OkHttpClient client = new OkHttpClient
+                .Builder()
+                .addInterceptor(new LoggerInterceptor())
+                .build();
         retrofit = new Retrofit.Builder()
-                .baseUrl("http://a-task.herokuapp.com/api/").client(client)
+                .baseUrl("http://a-task.herokuapp.com/api/")
+                .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
     }
 
-    public LoginService createLoginService() {
-        return retrofit.create(LoginService.class);
-    }
-
-    class LoggerInterceptor implements Interceptor {
-
-        @Override
-        public Response intercept(Chain chain) throws IOException {
-            //1: Get Request
-            Request request = chain.request();
-            //2: Process request
-            RequestBody body = request.body();
-            if(body != null) {
-                Log.d("NetContext", String.format("%s", body));
-            }
-
-            Headers headers = request.headers();
-
-            if(headers != null) {
-                Log.d("NetContext", String.format("%s", headers));
-            }
-
-            //3: Send
-            Response response = chain.proceed(request);
-            Log.d(TAG, String.format("%s", response.toString()));
-            Log.d(TAG, String.format("%s", getResponseString(response)));
-            return response;
-        }
-    }
     public Retrofit getRetrofit() {
         return retrofit;
     }
 
+    public <T> T create(Class<T>  classz) {
+        return retrofit.create(classz);
+    }
+
+    public static final NetContext instance = new NetContext();
+
+    public LoginService createLoginService(){
+        return retrofit.create(LoginService.class);
+    }
+    class LoggerInterceptor implements Interceptor{
+        private static final String TAG = "LoggerInterceptor";
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            //1: Get request
+            Request request = chain.request();
+
+            //2: Process request (print out)
+            RequestBody body = request.body();
+            Log.d(TAG, String.format("intercept: %s", body ));
+            if(body != null){
+                Log.d(TAG, String.format("intercept: %s", body.toString() ));
+            }
+            okhttp3.Headers header = request.headers();
+
+            if(header != null){
+                Log.d(TAG, String.format("header: %s", header));
+            }
+            //3: Send. Proceed
+            Response response =  chain.proceed(request);
+            Log.d(TAG, String.format("intercept: %s", request ));
+            //4: Process response
+            Log.d(TAG, String.format("intercept: %s", response.toString()));
+            Log.d(TAG, String.format("intercept: %s", getResponseString(response)));
+            return response;
+        }
+    }
     private String getResponseString(okhttp3.Response response) {
         ResponseBody responseBody = response.body();
         BufferedSource source = responseBody.source();
@@ -78,6 +87,18 @@ public class NetContext {
         Buffer buffer = source.buffer();
         return buffer.clone().readString(Charset.forName("UTF-8"));
     }
-
-    public static final NetContext instance = new NetContext();
+    class HeaderInterceptor implements Interceptor {
+        String token = SharePrefs.getInstance().getAccessToken();
+        @Override
+        public Response intercept (Chain chain)throws IOException {
+            if (token != null) {
+                Request request = chain.request()
+                        .newBuilder()
+                        .addHeader("Authorization", String.format("JWT %s", token))
+                        .build();
+                return chain.proceed(request);
+            }
+            return chain.proceed(chain.request());
+        }
+    }
 }

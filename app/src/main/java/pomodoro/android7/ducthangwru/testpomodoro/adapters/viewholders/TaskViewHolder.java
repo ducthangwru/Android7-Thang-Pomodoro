@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -11,6 +12,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import pomodoro.android7.ducthangwru.testpomodoro.R;
 import pomodoro.android7.ducthangwru.testpomodoro.databases.models.Task;
+import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.TaskJson;
 
 /**
  * Created by DUC THANG on 2/8/2017.
@@ -18,7 +20,6 @@ import pomodoro.android7.ducthangwru.testpomodoro.databases.models.Task;
 
 public class TaskViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.v_task_color)
-    public
     View vTaskColor;
 
     @BindView(R.id.tv_task_name)
@@ -36,7 +37,7 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
         ButterKnife.bind(this, itemView);
     }
 
-    public void bind(Task task) {
+    public void bind(TaskJson task) {
         //1: Bind Color
         //vTaskColor.setBackgroundColor(Color.parseColor(task.getColor()));
         GradientDrawable gradientDrawable = (GradientDrawable) vTaskColor.getBackground();
@@ -54,5 +55,17 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
 
     public View getIbStart() {
         return ibStart;
+    }
+
+    public View getvTaskColor() {
+        return vTaskColor;
+    }
+
+    public TextView getTvTaskName() {
+        return tvTaskName;
+    }
+
+    public ImageView getIvDone() {
+        return ivDone;
     }
 }

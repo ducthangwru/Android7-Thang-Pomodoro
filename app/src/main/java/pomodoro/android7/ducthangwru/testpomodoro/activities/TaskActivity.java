@@ -16,30 +16,29 @@ import android.view.View;
 import butterknife.ButterKnife;
 import pomodoro.android7.ducthangwru.testpomodoro.R;
 import pomodoro.android7.ducthangwru.testpomodoro.fragments.FragmentListenner;
+import pomodoro.android7.ducthangwru.testpomodoro.fragments.SceneFragment;
 import pomodoro.android7.ducthangwru.testpomodoro.fragments.TaskFragment;
 public class TaskActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, FragmentListenner {
 
-    private TaskFragment taskFragment;
+    ActionBarDrawerToggle toggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task);
-
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
         getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
             public void onBackStackChanged() {
-                if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                if(getSupportFragmentManager().getBackStackEntryCount() > 0){
                     toggle.setDrawerIndicatorEnabled(false);
                     toggle.setHomeAsUpIndicator(R.drawable.ic_arrow_back);
                     toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
@@ -48,7 +47,8 @@ public class TaskActivity extends AppCompatActivity
                             onBackPressed();
                         }
                     });
-                } else {
+                }
+                else{
                     toggle.setDrawerIndicatorEnabled(true);
                     toggle.setToolbarNavigationClickListener(null);
                 }
@@ -57,10 +57,11 @@ public class TaskActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+//        setupUI();
+//        listen();
+        SceneFragment sceneFragment = new SceneFragment(this.getSupportFragmentManager(),R.id.fl_main);
+        sceneFragment.replaceFragment(new TaskFragment(),false);
 
-        taskFragment = new TaskFragment();
-        this.replaceFragment(taskFragment,false);
-        taskFragment.setReplace(this);
         ButterKnife.bind(this);
     }
 
