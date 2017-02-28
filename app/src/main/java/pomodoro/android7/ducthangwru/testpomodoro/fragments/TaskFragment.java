@@ -1,13 +1,11 @@
 package pomodoro.android7.ducthangwru.testpomodoro.fragments;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,16 +21,12 @@ import butterknife.OnClick;
 import pomodoro.android7.ducthangwru.testpomodoro.R;
 import pomodoro.android7.ducthangwru.testpomodoro.actions.AddAction;
 import pomodoro.android7.ducthangwru.testpomodoro.actions.EditAction;
-import pomodoro.android7.ducthangwru.testpomodoro.activities.TaskActivity;
 import pomodoro.android7.ducthangwru.testpomodoro.adapters.TaskAdapter;
 import pomodoro.android7.ducthangwru.testpomodoro.databases.DbContext;
-import pomodoro.android7.ducthangwru.testpomodoro.databases.models.Task;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.NetContext;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.DeleteJson;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.TaskJson;
-import pomodoro.android7.ducthangwru.testpomodoro.networks.services.AddNewTaskServices;
-import pomodoro.android7.ducthangwru.testpomodoro.networks.services.DeleteTaskServices;
-import pomodoro.android7.ducthangwru.testpomodoro.networks.services.GetAllTaskServices;
+import pomodoro.android7.ducthangwru.testpomodoro.networks.services.TaskServices;
 import pomodoro.android7.ducthangwru.testpomodoro.settings.SharePrefs;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,12 +39,30 @@ public class TaskFragment extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_task, container, false);
-        setupUI(view);
         downloadTasks();
+        setupUI(view);
         return view;
     }
 
     private void downloadTasks() {
+        DbContext.getInstance().deleteAll();
+        TaskServices getTaskService = NetContext.instance.createTaskSevice();
+        getTaskService.getTasks("JWT "+ SharePrefs.getInstance().getAccessToken()).enqueue(new Callback<List<TaskJson>>() {
+            @Override
+            public void onResponse(Call<List<TaskJson>> call, Response<List<TaskJson>> response) {
+                for(TaskJson taskJson : response.body()){
+                    if(taskJson.getColor() != null) {
+                        DbContext.getInstance().addOrUpdate(taskJson);
+
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<TaskJson>> call, Throwable t) {
+
+            }
+        });
     }
 
     private void setupUI(View view) {
@@ -62,16 +74,14 @@ public class TaskFragment extends Fragment {
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this.getContext(), DividerItemDecoration.VERTICAL);
         rvTask.addItemDecoration(dividerItemDecoration);
         setHasOptionsMenu(true);
-        //design parttern observer
+
         taskAdapter.setTaskItemClickListener(new TaskAdapter.TaskItemClickListener() {
             @Override
             public void onItemClick(TaskJson taskJson) {
                 TaskDetailFragment taskDetailFragment = new TaskDetailFragment();
-                //lam sao de 2 th nay doc lap voi nhau
                 taskDetailFragment.setTaskAction(new EditAction());
                 taskDetailFragment.setTitle("Edit Task");
                 taskDetailFragment.setTask(taskJson);
-                taskDetailFragment.setPosition(DbContext.instance.getPosition(taskJson));
                 (new SceneFragment(getActivity().getSupportFragmentManager(), R.id.fl_main)).replaceFragment(taskDetailFragment, true);
             }
         });
@@ -83,42 +93,45 @@ public class TaskFragment extends Fragment {
                 (new SceneFragment(getActivity().getSupportFragmentManager(), R.id.fl_main)).replaceFragment(timerFragment, true);
             }
         });
+
         taskAdapter.setDeleteTaskListener(new TaskAdapter.DeleteTaskListener() {
             @Override
-            public void deleteTask(int position) {
-                showDialog(position);
+            public void deleteTask(TaskJson taskJson) {
+                showDialog(taskJson);
             }
         });
     }
 
-    private void showDialog(final int position) {
+    private void showDialog(final TaskJson task) {
         AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
         dialog.setTitle("DELETE");
         dialog.setMessage("Are you sure?");
         dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                delete(position);
+                delete(task);
             }
         });
+
         dialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
             }
         });
-        dialog.create().show();
+        AlertDialog alert11 = dialog.create();
+        alert11.show();
     }
 
-    private void delete(int position) {
-        AddNewTaskServices addNewTask = NetContext.instance.getRetrofit().create(AddNewTaskServices.class);
-        TaskJson task = DbContext.instance.allTasks().get(position);
-        DbContext.instance.allTasks().remove(position);
-        addNewTask.deleteTask("http://a-task.herokuapp.com/api/task/" + task.getLocalID(),
+    private void delete(final TaskJson task) {
+        TaskServices taskServices = NetContext.instance.createTaskSevice();
+
+        taskServices.deleteTask("http://a-task.herokuapp.com/api/task/" + task.getLocalID(),
                 "JWT " + SharePrefs.getInstance().getAccessToken())
                 .enqueue(new Callback<DeleteJson>() {
                     @Override
                     public void onResponse(Call<DeleteJson> call, retrofit2.Response<DeleteJson> response) {
+                        DbContext.getInstance().delete(task.getLocalID());
                         taskAdapter.notifyDataSetChanged();
                     }
 

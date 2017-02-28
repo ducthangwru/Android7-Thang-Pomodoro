@@ -14,6 +14,7 @@ import okhttp3.ResponseBody;
 import okio.Buffer;
 import okio.BufferedSource;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.services.LoginService;
+import pomodoro.android7.ducthangwru.testpomodoro.networks.services.TaskServices;
 import pomodoro.android7.ducthangwru.testpomodoro.settings.SharePrefs;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -38,10 +39,6 @@ public class NetContext {
 
     public Retrofit getRetrofit() {
         return retrofit;
-    }
-
-    public <T> T create(Class<T>  classz) {
-        return retrofit.create(classz);
     }
 
     public static final NetContext instance = new NetContext();
@@ -87,6 +84,10 @@ public class NetContext {
         Buffer buffer = source.buffer();
         return buffer.clone().readString(Charset.forName("UTF-8"));
     }
+
+    public TaskServices createTaskSevice(){
+        return retrofit.create(TaskServices.class);
+    }
     class HeaderInterceptor implements Interceptor {
         String token = SharePrefs.getInstance().getAccessToken();
         @Override
@@ -100,5 +101,6 @@ public class NetContext {
             }
             return chain.proceed(chain.request());
         }
+
     }
 }

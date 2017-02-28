@@ -2,18 +2,24 @@ package pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels;
 
 import com.google.gson.annotations.SerializedName;
 
-import pomodoro.android7.ducthangwru.testpomodoro.databases.models.Task;
+import java.util.UUID;
+
+import io.realm.Realm;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
 
 /**
  * Created by DUC THANG on 2/27/2017.
  */
 
-public class TaskJson{
+public class TaskJson extends RealmObject{
     @SerializedName("due_date")
     private String dueDate;
 
+    @PrimaryKey
     @SerializedName("local_id")
-    private String localID;
+    private String local_id;
 
     @SerializedName("color")
     private String color;
@@ -34,7 +40,7 @@ public class TaskJson{
     public String toString() {
         return "TaskJson{" +
                 "dueDate='" + dueDate + '\'' +
-                ", localID='" + localID + '\'' +
+                ", localID='" + local_id + '\'' +
                 ", color='" + color + '\'' +
                 ", id='" + id + '\'' +
                 ", isDone=" + isDone +
@@ -43,26 +49,30 @@ public class TaskJson{
                 '}';
     }
 
-    public String getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(String dueDate) {
-        this.dueDate = dueDate;
+    public TaskJson() {
+        local_id = UUID.randomUUID().toString();
     }
 
     public TaskJson(String name, String color, float payment) {
+        this.local_id = UUID.randomUUID().toString();
         this.name = name;
         this.color = color;
         this.payment = payment;
     }
 
+    public TaskJson(String localID, String color, String name, float payment) {
+        this.local_id = localID;
+        this.color = color;
+        this.name = name;
+        this.payment = payment;
+    }
+
     public String getLocalID() {
-        return localID;
+        return local_id;
     }
 
     public void setLocalID(String localID) {
-        this.localID = localID;
+        this.local_id = localID;
     }
 
     public String getColor() {
@@ -108,7 +118,7 @@ public class TaskJson{
     public TaskJson(String dueDate, String localID, String color, String id, boolean isDone, float payment, String name) {
 
         this.dueDate = dueDate;
-        this.localID = localID;
+        this.local_id = localID;
         this.color = color;
         this.id = id;
         this.isDone = isDone;

@@ -28,7 +28,13 @@ import pomodoro.android7.ducthangwru.testpomodoro.activities.TaskActivity;
 import pomodoro.android7.ducthangwru.testpomodoro.adapters.ColorAdapter;
 import pomodoro.android7.ducthangwru.testpomodoro.databases.DbContext;
 import pomodoro.android7.ducthangwru.testpomodoro.decorations.TaskColorDecor;
+import pomodoro.android7.ducthangwru.testpomodoro.networks.NetContext;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.TaskJson;
+import pomodoro.android7.ducthangwru.testpomodoro.networks.services.TaskServices;
+import pomodoro.android7.ducthangwru.testpomodoro.settings.SharePrefs;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -47,11 +53,6 @@ public class TaskDetailFragment extends Fragment {
     TaskColorDecor taskColorDecor;
     private TaskAction taskAction;
     ColorAdapter colorAdapter = new ColorAdapter();
-
-    public TaskAction getTaskAction() {
-        return taskAction;
-    }
-
 
     public void setPosition(int position) {
         this.position = position;
@@ -93,7 +94,7 @@ public class TaskDetailFragment extends Fragment {
         taskColorDecor = new TaskColorDecor();
         rv_color.addItemDecoration(new TaskColorDecor());
         rv_color.setAdapter(colorAdapter);
-        rv_color.setLayoutManager(new GridLayoutManager(getActivity(), 3));
+        rv_color.setLayoutManager(new GridLayoutManager(getActivity(), 4));
         if (getActivity() instanceof TaskActivity) {
             ((TaskActivity) getActivity()).getSupportActionBar().setTitle(title);
         }
@@ -108,33 +109,68 @@ public class TaskDetailFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         if (item.getItemId() == R.id.it_ok) {
-            //1: get data from UI
             String taskName;
             float payment;
             String color;
             taskName = etTaskName.getText().toString();
-            color = colorAdapter.getSelectionColor();
+            color = colorAdapter.getSelectedColor();
             try {
                 payment = Float.parseFloat(etPayment.getText().toString());
             } catch (Exception e) {
                 payment = 0.0f;
             }
-            //2: Create new  Task;
-            TaskJson newTask = new TaskJson(taskName, color, payment);
-
-            if (task != null) {//EDIT
-                newTask.setLocalID(task.getLocalID());
-                DbContext.instance.editTask(newTask, position);
-                taskAction.toDo(newTask);
-            } else {
-                //ADD
-                newTask.setLocalID(UUID.randomUUID().toString());
-                taskAction.toDo(newTask);
-
+            if (task != null) {
+                TaskJson newTask = new TaskJson(task.getLocalID(), color, taskName, payment);
+                edit(newTask);
+            } else {//ADD
+                TaskJson newTask = new TaskJson(taskName, color, payment);
+                add(newTask);
             }
-            getActivity().onBackPressed();
         }
 
         return false;
+    }
+    public void edit(final TaskJson newTask){
+        String type = "application/json";
+        String request = (new Gson()).toJson(newTask);
+        MediaType mediaType = MediaType.parse(request);
+        RequestBody requestBody = RequestBody.create(mediaType, request);
+        TaskServices edit = NetContext.instance.createTaskSevice();
+        edit.editTask("http://a-task.herokuapp.com/api/task/" + newTask.getLocalID(), type,
+                "JWT " + SharePrefs.getInstance().getAccessToken(), requestBody)
+                .enqueue(new Callback<TaskJson>() {
+                    @Override
+                    public void onResponse(Call<TaskJson> call, Response<TaskJson> response) {
+                        Log.d(TAG, String.format("onResponse: %s", response.body()));
+                        DbContext.getInstance().addOrUpdate(newTask);
+                        getActivity().onBackPressed();
+                    }
+
+                    @Override
+                    public void onFailure(Call<TaskJson> call, Throwable t) {
+                        Log.d(TAG, "onFailure: ");
+                    }
+                });
+    }
+    public void add(final TaskJson newTask){
+        String type = "application/json";
+        String taskRequest = (new Gson()).toJson(newTask);
+        TaskServices taskService = NetContext.instance.createTaskSevice();
+        MediaType jsonType = MediaType.parse("application/json");
+        RequestBody requestBody = RequestBody.create(jsonType, taskRequest);
+        taskService.addTask(type, "JWT " + SharePrefs.getInstance().getAccessToken(), requestBody).enqueue(new Callback<TaskJson>() {
+            @Override
+            public void onResponse(Call<TaskJson> call, Response<TaskJson> response) {
+                Log.d(TAG, String.format("onResponse: %s", response.body()));
+                DbContext.getInstance().addTask(newTask);
+                getActivity().onBackPressed();
+
+            }
+
+            @Override
+            public void onFailure(Call<TaskJson> call, Throwable t) {
+
+            }
+        });
     }
 }

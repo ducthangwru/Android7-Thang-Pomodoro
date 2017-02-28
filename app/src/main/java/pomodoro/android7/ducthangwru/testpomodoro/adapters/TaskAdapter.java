@@ -17,7 +17,6 @@ import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.TaskJson;
  */
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder> {
-    private static final String TAG = "TaskAdapter";
     private ButtonPlayClickListener buttonPlayClickListener;
     private TaskItemClickListener taskItemClickListener;
     private DeleteTaskListener deleteTaskListener;
@@ -27,7 +26,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder> {
     }
 
     public interface DeleteTaskListener {
-        void deleteTask(int position);
+        void deleteTask(TaskJson taskJson);
     }
 
     public interface TaskItemClickListener {
@@ -61,7 +60,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder> {
     @Override
     public void onBindViewHolder(final TaskViewHolder holder, final int position) {
         //get Data on position
-        final TaskJson task = DbContext.instance.allTasks().get(position);
+        final TaskJson task = DbContext.getInstance().allTasks().get(position);
         //Bind data to View
         holder.bind(task);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -84,7 +83,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder> {
         holder.getvTaskColor().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                holder.setCheck(!task.isCheck());
                 task.setDone(!task.isDone());
                 TaskAdapter.this.notifyItemChanged(position);
             }
@@ -92,8 +90,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder> {
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                Log.d(TAG, "onLongClick: ");
-                deleteTaskListener.deleteTask(position);
+                deleteTaskListener.deleteTask(task);
                 return false;
             }
         });
@@ -101,6 +98,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder> {
 
     @Override
     public int getItemCount() {
-        return DbContext.instance.allTasks().size();
+        return DbContext.getInstance().allTasks().size();
     }
 }

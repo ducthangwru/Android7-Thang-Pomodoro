@@ -14,47 +14,50 @@ import pomodoro.android7.ducthangwru.testpomodoro.databases.DbContext;
  */
 
 public class ColorAdapter extends RecyclerView.Adapter<ColorViewHolder>{
-    private int selectedPossition;
-
-    public String getSelectionColor() {
-        return DbContext.colors[selectedPossition];
-    }
+    private int selectedPosition;
 
     @Override
     public ColorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View itemView=layoutInflater.inflate(R.layout.item_color,parent,false);
-        return new ColorViewHolder(itemView);
+        View colorView = layoutInflater.inflate(R.layout.item_color, parent, false);
+        ColorViewHolder ColorViewHolder = new ColorViewHolder(colorView);
+        return ColorViewHolder;
     }
 
-    @Override
-    public void onBindViewHolder(ColorViewHolder holder, final int position) {
-        String s = DbContext.colors[position];
-        holder.bind(s);
-
-        if(selectedPossition == position) {
-            holder.setCheck(true);
-        } else {
-            holder.setCheck(false);
-        }
-
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectedPossition = position;
-
-                notifyDataSetChanged();
-            }
-        });
+    public String getSelectedColor() {
+        return DbContext.colors[selectedPosition];
     }
 
     public void setSelectedColor(String color) {
-        for(int colorIndex = 0; colorIndex < DbContext.colors.length; colorIndex++) {
-            if(DbContext.colors[colorIndex].equalsIgnoreCase(color)) {
-                selectedPossition = colorIndex;
+        selectedPosition = 0;
+        for (int colorIndex = 0; colorIndex < DbContext.colors.length; colorIndex++) {
+            if (DbContext.colors[colorIndex].equalsIgnoreCase(color)) {
+                selectedPosition = colorIndex;
             }
         }
         notifyDataSetChanged();
+    }
+
+
+    @Override
+    public void onBindViewHolder(ColorViewHolder holder, final int position) {
+        String color = DbContext.colors[position];
+        holder.bind(color);
+        if (selectedPosition == position) {
+            //display check image
+            holder.setCheck(true);
+        } else {
+            //hide check mark
+            holder.setCheck(false);
+        }
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                selectedPosition = position;
+                notifyDataSetChanged();
+            }
+        });
     }
 
     @Override

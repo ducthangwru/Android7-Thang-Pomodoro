@@ -32,6 +32,7 @@ import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.TaskJson;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.services.GetAllTaskServices;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.services.LoginService;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.services.RegisterService;
+import pomodoro.android7.ducthangwru.testpomodoro.networks.services.TaskServices;
 import pomodoro.android7.ducthangwru.testpomodoro.settings.LoginCredendials;
 import pomodoro.android7.ducthangwru.testpomodoro.settings.SharePrefs;
 import retrofit2.Call;
@@ -208,24 +209,27 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void getDataTasks(){
-        GetAllTaskServices getTaskService = NetContext.instance.getRetrofit().create(GetAllTaskServices.class);
-        getTaskService.getTasks("JWT "+token).enqueue(new Callback<List<TaskJson>>() {
-            @Override
-            public void onResponse(Call<List<TaskJson>> call, Response<List<TaskJson>> response) {
-                for(TaskJson taskJson : response.body()){
-                    Log.d(TAG, String.format("onResponse: %s",taskJson ));
-                    if(taskJson.getColor() != null) {
-                        DbContext.instance.addTask(taskJson);
-
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<TaskJson>> call, Throwable t) {
-
-            }
-        });
+//        DbContext.getInstance().deleteAll();
+//        TaskServices getTaskService = NetContext.instance.createTaskSevice();
+//        getTaskService.getTasks("JWT "+token).enqueue(new Callback<List<TaskJson>>() {
+//            @Override
+//            public void onResponse(Call<List<TaskJson>> call, Response<List<TaskJson>> response) {
+//                for(TaskJson taskJson : response.body()){
+//                    if(taskJson.getColor() != null) {
+//                        DbContext.getInstance().addOrUpdate(taskJson);
+//
+//                    }
+//                }
+//                for (TaskJson task : DbContext.getInstance().allTasks()){
+//                    Log.d(TAG, String.format("TaskJson: %s", task));
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<List<TaskJson>> call, Throwable t) {
+//
+//            }
+//        });
     }
 
 
