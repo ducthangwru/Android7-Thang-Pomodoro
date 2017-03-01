@@ -76,7 +76,6 @@ public class TaskDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_task_detail, container, false);
         setupUI(view);
         return view;
@@ -114,17 +113,17 @@ public class TaskDetailFragment extends Fragment {
             }
             if (task != null) {
                 TaskJson newTask = new TaskJson(task.getLocalID(), color, taskName, payment);
-                edit(newTask);
+                editTask(newTask);
             } else {
                 TaskJson newTask = new TaskJson(taskName, color, payment);
-                add(newTask);
+                addNewTask(newTask);
             }
         }
 
         return false;
     }
 
-    public void add(final TaskJson newTask){
+    public void addNewTask(final TaskJson newTask){
         String type = "application/json";
         String taskRequest = (new Gson()).toJson(newTask);
         TaskServices taskService = NetContext.instance.createTaskSevice();
@@ -141,12 +140,12 @@ public class TaskDetailFragment extends Fragment {
 
             @Override
             public void onFailure(Call<TaskJson> call, Throwable t) {
-
+                Log.d(TAG, "onFailure: ");
             }
         });
     }
 
-    public void edit(final TaskJson newTask){
+    public void editTask(final TaskJson newTask){
         String type = "application/json";
         String request = (new Gson()).toJson(newTask);
         MediaType mediaType = MediaType.parse(request);
