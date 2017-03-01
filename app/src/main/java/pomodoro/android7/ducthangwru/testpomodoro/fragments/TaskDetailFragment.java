@@ -109,7 +109,7 @@ public class TaskDetailFragment extends Fragment {
             try {
                 payment = Float.parseFloat(etPayment.getText().toString());
             } catch (Exception e) {
-                payment = 0.0f;
+                payment = 0;
             }
             if (task != null) {
                 TaskJson newTask = new TaskJson(task.getLocalID(), color, taskName, payment);

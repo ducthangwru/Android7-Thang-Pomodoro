@@ -12,9 +12,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.Buffer;
 import okio.BufferedSource;
-import pomodoro.android7.ducthangwru.testpomodoro.networks.services.LoginService;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.services.TaskServices;
-import pomodoro.android7.ducthangwru.testpomodoro.settings.SharePrefs;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -42,9 +40,7 @@ public class NetContext {
 
     public static final NetContext instance = new NetContext();
 
-    public LoginService createLoginService(){
-        return retrofit.create(LoginService.class);
-    }
+
     class LoggerInterceptor implements Interceptor{
         private static final String TAG = "LoggerInterceptor";
         @Override
@@ -70,11 +66,12 @@ public class NetContext {
             return response;
         }
     }
+
     private String getResponseString(okhttp3.Response response) {
         ResponseBody responseBody = response.body();
         BufferedSource source = responseBody.source();
         try {
-            source.request(Long.MAX_VALUE); // Buffer the entire body.
+            source.request(Long.MAX_VALUE);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -84,20 +81,5 @@ public class NetContext {
 
     public TaskServices createTaskSevice(){
         return retrofit.create(TaskServices.class);
-    }
-    class HeaderInterceptor implements Interceptor {
-        String token = SharePrefs.getInstance().getAccessToken();
-        @Override
-        public Response intercept (Chain chain)throws IOException {
-            if (token != null) {
-                Request request = chain.request()
-                        .newBuilder()
-                        .addHeader("Authorization", String.format("JWT %s", token))
-                        .build();
-                return chain.proceed(request);
-            }
-            return chain.proceed(chain.request());
-        }
-
     }
 }
