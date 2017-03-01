@@ -56,8 +56,6 @@ public class TaskActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-//        setupUI();
-//        listen();
         SceneFragment sceneFragment = new SceneFragment(this.getSupportFragmentManager(),R.id.fl_main);
         sceneFragment.replaceFragment(new TaskFragment(),false);
 

@@ -23,7 +23,6 @@ public class ColorViewHolder extends RecyclerView.ViewHolder {
         ButterKnife.bind(this,itemView);
     }
     public void bind(String color){
-        //1: Bind color
         GradientDrawable drawable = (GradientDrawable)v_color.getBackground();
         drawable.setColor(Color.parseColor(color));
     }

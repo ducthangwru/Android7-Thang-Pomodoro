@@ -123,6 +123,29 @@ public class TaskDetailFragment extends Fragment {
 
         return false;
     }
+
+    public void add(final TaskJson newTask){
+        String type = "application/json";
+        String taskRequest = (new Gson()).toJson(newTask);
+        TaskServices taskService = NetContext.instance.createTaskSevice();
+        MediaType jsonType = MediaType.parse("application/json");
+        RequestBody requestBody = RequestBody.create(jsonType, taskRequest);
+        taskService.addTask(type, "JWT " + SharePrefs.getInstance().getAccessToken(), requestBody).enqueue(new Callback<TaskJson>() {
+            @Override
+            public void onResponse(Call<TaskJson> call, Response<TaskJson> response) {
+                Log.d(TAG, String.format("onResponse: %s", response.body()));
+                DbContext.getInstance().addTask(newTask);
+                getActivity().onBackPressed();
+
+            }
+
+            @Override
+            public void onFailure(Call<TaskJson> call, Throwable t) {
+
+            }
+        });
+    }
+
     public void edit(final TaskJson newTask){
         String type = "application/json";
         String request = (new Gson()).toJson(newTask);
@@ -145,25 +168,5 @@ public class TaskDetailFragment extends Fragment {
                     }
                 });
     }
-    public void add(final TaskJson newTask){
-        String type = "application/json";
-        String taskRequest = (new Gson()).toJson(newTask);
-        TaskServices taskService = NetContext.instance.createTaskSevice();
-        MediaType jsonType = MediaType.parse("application/json");
-        RequestBody requestBody = RequestBody.create(jsonType, taskRequest);
-        taskService.addTask(type, "JWT " + SharePrefs.getInstance().getAccessToken(), requestBody).enqueue(new Callback<TaskJson>() {
-            @Override
-            public void onResponse(Call<TaskJson> call, Response<TaskJson> response) {
-                Log.d(TAG, String.format("onResponse: %s", response.body()));
-                DbContext.getInstance().addTask(newTask);
-                getActivity().onBackPressed();
 
-            }
-
-            @Override
-            public void onFailure(Call<TaskJson> call, Throwable t) {
-
-            }
-        });
-    }
 }

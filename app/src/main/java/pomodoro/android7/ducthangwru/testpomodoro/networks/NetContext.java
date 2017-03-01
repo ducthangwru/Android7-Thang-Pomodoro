@@ -49,10 +49,8 @@ public class NetContext {
         private static final String TAG = "LoggerInterceptor";
         @Override
         public Response intercept(Chain chain) throws IOException {
-            //1: Get request
             Request request = chain.request();
 
-            //2: Process request (print out)
             RequestBody body = request.body();
             Log.d(TAG, String.format("intercept: %s", body ));
             if(body != null){
@@ -63,10 +61,10 @@ public class NetContext {
             if(header != null){
                 Log.d(TAG, String.format("header: %s", header));
             }
-            //3: Send. Proceed
+
             Response response =  chain.proceed(request);
             Log.d(TAG, String.format("intercept: %s", request ));
-            //4: Process response
+
             Log.d(TAG, String.format("intercept: %s", response.toString()));
             Log.d(TAG, String.format("intercept: %s", getResponseString(response)));
             return response;

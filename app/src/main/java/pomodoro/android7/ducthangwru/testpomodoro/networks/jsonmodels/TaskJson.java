@@ -35,19 +35,6 @@ public class TaskJson extends RealmObject{
     @SerializedName("name")
     private String name;
 
-    @Override
-    public String toString() {
-        return "TaskJson{" +
-                "dueDate='" + dueDate + '\'' +
-                ", localID='" + local_id + '\'' +
-                ", color='" + color + '\'' +
-                ", id='" + id + '\'' +
-                ", isDone=" + isDone +
-                ", payment=" + payment +
-                ", name='" + name + '\'' +
-                '}';
-    }
-
     public TaskJson() {
         local_id = UUID.randomUUID().toString();
     }
@@ -57,6 +44,17 @@ public class TaskJson extends RealmObject{
         this.name = name;
         this.color = color;
         this.payment = payment;
+    }
+
+    public TaskJson(String dueDate, String localID, String color, String id, boolean isDone, float payment, String name) {
+
+        this.dueDate = dueDate;
+        this.local_id = localID;
+        this.color = color;
+        this.id = id;
+        this.isDone = isDone;
+        this.payment = payment;
+        this.name = name;
     }
 
     public TaskJson(String localID, String color, String name, float payment) {
@@ -114,14 +112,16 @@ public class TaskJson extends RealmObject{
         this.name = name;
     }
 
-    public TaskJson(String dueDate, String localID, String color, String id, boolean isDone, float payment, String name) {
-
-        this.dueDate = dueDate;
-        this.local_id = localID;
-        this.color = color;
-        this.id = id;
-        this.isDone = isDone;
-        this.payment = payment;
-        this.name = name;
+    @Override
+    public String toString() {
+        return "TaskJson{" +
+                "dueDate='" + dueDate + '\'' +
+                ", localID='" + local_id + '\'' +
+                ", color='" + color + '\'' +
+                ", id='" + id + '\'' +
+                ", isDone=" + isDone +
+                ", payment=" + payment +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

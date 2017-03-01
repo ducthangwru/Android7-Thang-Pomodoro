@@ -47,24 +47,19 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder> {
 
     @Override
     public TaskViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        //Create View
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         View itemView = layoutInflater.inflate(R.layout.item_task, parent, false);
-        //Create ViewHolder
         TaskViewHolder taskViewholder = new TaskViewHolder(itemView);
         return taskViewholder;
     }
 
     @Override
     public void onBindViewHolder(final TaskViewHolder holder, final int position) {
-        //get Data on position
         final TaskJson task = DbContext.getInstance().allTasks().get(position);
-        //Bind data to View
         holder.bind(task);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //send event to outside
                 if (taskItemClickListener != null) {
                     taskItemClickListener.onItemClick(task);
                 }

@@ -87,13 +87,11 @@ public class LoginActivity extends AppCompatActivity {
 
     private void sendLogin(String username, String password) {
         pbLoading.setVisibility(View.VISIBLE);
-        //1. Create retrofit
-        //2 Create Service
+
         LoginService loginService = NetContext.instance.getRetrofit().create(LoginService.class);
-        //data & format
         String loginJson = (new Gson()).toJson(new LoginBodyJson(username, password));
+        
         RequestBody loginBody = RequestBody.create(jsonType, loginJson);
-        //create Call
         Call<LoginResponseJson> loginCall = loginService.login(loginBody);
         loginCall.enqueue(new Callback<LoginResponseJson>() {
             @Override
@@ -136,7 +134,6 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<RegisterResponseJson> call, Response<RegisterResponseJson> response) {
                         Log.d(TAG, "onResponse Code: " + response.code());
-                        //ban dau em de la 400 cung k chay?
                         RegisterResponseJson registerResponse = response.body();
                         Log.d(TAG, String.format("onResponse: %s", registerResponse));
                         if (registerResponse == null) {
@@ -202,27 +199,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void getDataTasks(){
-//        DbContext.getInstance().deleteAll();
-//        TaskServices getTaskService = NetContext.instance.createTaskSevice();
-//        getTaskService.getTasks("JWT "+token).enqueue(new Callback<List<TaskJson>>() {
-//            @Override
-//            public void onResponse(Call<List<TaskJson>> call, Response<List<TaskJson>> response) {
-//                for(TaskJson taskJson : response.body()){
-//                    if(taskJson.getColor() != null) {
-//                        DbContext.getInstance().addOrUpdate(taskJson);
-//
-//                    }
-//                }
-//                for (TaskJson task : DbContext.getInstance().allTasks()){
-//                    Log.d(TAG, String.format("TaskJson: %s", task));
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<List<TaskJson>> call, Throwable t) {
-//
-//            }
-//        });
     }
 
 

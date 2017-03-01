@@ -70,7 +70,6 @@ public class TaskFragment extends Fragment {
         rvTask.setAdapter(taskAdapter);
         rvTask.setLayoutManager(new LinearLayoutManager(this.getContext()));
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Tasks");
-        //add line to recycler view
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this.getContext(), DividerItemDecoration.VERTICAL);
         rvTask.addItemDecoration(dividerItemDecoration);
         setHasOptionsMenu(true);

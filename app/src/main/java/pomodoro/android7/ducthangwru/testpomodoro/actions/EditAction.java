@@ -40,7 +40,6 @@ public class EditAction implements TaskAction {
 
                     @Override
                     public void onFailure(Call<TaskJson> call, Throwable t) {
-                        Log.d(TAG, "onFailure: ");
                     }
                 });
     }
