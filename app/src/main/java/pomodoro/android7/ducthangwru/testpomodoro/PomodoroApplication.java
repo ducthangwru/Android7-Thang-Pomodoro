@@ -4,8 +4,6 @@ import android.app.Application;
 import android.util.Log;
 
 import pomodoro.android7.ducthangwru.testpomodoro.databases.DbContext;
-import pomodoro.android7.ducthangwru.testpomodoro.databases.models.Task;
-import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.TaskJson;
 import pomodoro.android7.ducthangwru.testpomodoro.settings.SharePrefs;
 
 /**

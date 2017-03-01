@@ -44,10 +44,8 @@ public class ColorAdapter extends RecyclerView.Adapter<ColorViewHolder>{
         String color = DbContext.colors[position];
         holder.bind(color);
         if (selectedPosition == position) {
-            //display check image
             holder.setCheck(true);
         } else {
-            //hide check mark
             holder.setCheck(false);
         }
         holder.itemView.setOnClickListener(new View.OnClickListener() {

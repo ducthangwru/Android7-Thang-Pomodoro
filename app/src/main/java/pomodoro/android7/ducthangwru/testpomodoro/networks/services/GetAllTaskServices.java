@@ -2,7 +2,6 @@ package pomodoro.android7.ducthangwru.testpomodoro.networks.services;
 
 import java.util.List;
 
-import pomodoro.android7.ducthangwru.testpomodoro.databases.models.Task;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.TaskJson;
 import retrofit2.Call;
 import retrofit2.http.GET;

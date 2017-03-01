@@ -43,6 +43,5 @@ public class EditAction implements TaskAction {
                         Log.d(TAG, "onFailure: ");
                     }
                 });
-
     }
 }

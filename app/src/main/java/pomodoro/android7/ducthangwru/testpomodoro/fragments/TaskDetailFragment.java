@@ -16,8 +16,6 @@ import android.widget.EditText;
 
 import com.google.gson.Gson;
 
-import java.util.UUID;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import okhttp3.MediaType;
@@ -54,16 +52,11 @@ public class TaskDetailFragment extends Fragment {
     private TaskAction taskAction;
     ColorAdapter colorAdapter = new ColorAdapter();
 
-    public void setPosition(int position) {
-        this.position = position;
-    }
-
     public void setTaskAction(TaskAction taskAction) {
         this.taskAction = taskAction;
     }
 
     public TaskDetailFragment() {
-        // Required empty public constructor
         setHasOptionsMenu(true);
     }
 
@@ -122,7 +115,7 @@ public class TaskDetailFragment extends Fragment {
             if (task != null) {
                 TaskJson newTask = new TaskJson(task.getLocalID(), color, taskName, payment);
                 edit(newTask);
-            } else {//ADD
+            } else {
                 TaskJson newTask = new TaskJson(taskName, color, payment);
                 add(newTask);
             }

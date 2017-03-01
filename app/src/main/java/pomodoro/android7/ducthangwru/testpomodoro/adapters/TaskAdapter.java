@@ -1,7 +1,6 @@
 package pomodoro.android7.ducthangwru.testpomodoro.adapters;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +8,6 @@ import android.view.ViewGroup;
 import pomodoro.android7.ducthangwru.testpomodoro.R;
 import pomodoro.android7.ducthangwru.testpomodoro.adapters.viewholders.TaskViewHolder;
 import pomodoro.android7.ducthangwru.testpomodoro.databases.DbContext;
-import pomodoro.android7.ducthangwru.testpomodoro.databases.models.Task;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.TaskJson;
 
 /**

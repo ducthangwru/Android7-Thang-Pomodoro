@@ -2,8 +2,6 @@ package pomodoro.android7.ducthangwru.testpomodoro.databases.models;
 
 import com.google.gson.annotations.SerializedName;
 
-import butterknife.BindView;
-
 /**
  * Created by DUC THANG on 2/8/2017.
  */

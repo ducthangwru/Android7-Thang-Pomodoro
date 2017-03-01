@@ -4,7 +4,6 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 
-import pomodoro.android7.ducthangwru.testpomodoro.settings.SettingCredendials;
 import pomodoro.android7.ducthangwru.testpomodoro.settings.SharePrefs;
 
 /**

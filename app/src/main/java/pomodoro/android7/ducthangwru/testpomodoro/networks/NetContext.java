@@ -4,7 +4,6 @@ import android.util.Log;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

@@ -16,23 +16,16 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
-import java.util.List;
-
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import pomodoro.android7.ducthangwru.testpomodoro.R;
-import pomodoro.android7.ducthangwru.testpomodoro.databases.DbContext;
-import pomodoro.android7.ducthangwru.testpomodoro.databases.models.Task;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.NetContext;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.LoginBodyJson;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.LoginResponseJson;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.RegisterBodyJson;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.RegisterResponseJson;
-import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.TaskJson;
-import pomodoro.android7.ducthangwru.testpomodoro.networks.services.GetAllTaskServices;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.services.LoginService;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.services.RegisterService;
-import pomodoro.android7.ducthangwru.testpomodoro.networks.services.TaskServices;
 import pomodoro.android7.ducthangwru.testpomodoro.settings.LoginCredendials;
 import pomodoro.android7.ducthangwru.testpomodoro.settings.SharePrefs;
 import retrofit2.Call;

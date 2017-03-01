@@ -9,8 +9,6 @@ import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import pomodoro.android7.ducthangwru.testpomodoro.R;
-import pomodoro.android7.ducthangwru.testpomodoro.utils.Utils;
-
 /**
  * Created by DUC THANG on 2/11/2017.
  */

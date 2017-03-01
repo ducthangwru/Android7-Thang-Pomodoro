@@ -15,8 +15,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import pomodoro.android7.ducthangwru.testpomodoro.R;
 import pomodoro.android7.ducthangwru.testpomodoro.activities.TaskActivity;
-import pomodoro.android7.ducthangwru.testpomodoro.settings.SettingCredendials;
-import pomodoro.android7.ducthangwru.testpomodoro.settings.SharePrefs;
 import pomodoro.android7.ducthangwru.testpomodoro.utils.Utils;
 
 /**
@@ -45,7 +43,6 @@ public class TimeFragment extends Fragment {
     }
 
     public TimeFragment() {
-        // Required empty public constructor
     }
 
 
