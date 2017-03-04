@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -135,12 +136,10 @@ public class TaskDetailFragment extends Fragment {
                 Log.d(TAG, String.format("onResponse: %s", response.body()));
                 DbContext.getInstance().addTask(newTask);
                 getActivity().onBackPressed();
-
             }
-
             @Override
             public void onFailure(Call<TaskJson> call, Throwable t) {
-                Log.d(TAG, "onFailure: ");
+                Toast.makeText(TaskDetailFragment.this.getContext(), R.string.cant_add_task, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -163,7 +162,7 @@ public class TaskDetailFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<TaskJson> call, Throwable t) {
-                        Log.d(TAG, "onFailure: ");
+                        Toast.makeText(TaskDetailFragment.this.getContext(), R.string.cant_edit_task, Toast.LENGTH_SHORT).show();
                     }
                 });
     }

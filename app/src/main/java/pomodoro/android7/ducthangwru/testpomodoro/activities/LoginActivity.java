@@ -87,7 +87,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void sendLogin(String username, String password) {
         pbLoading.setVisibility(View.VISIBLE);
-
+        btLogin.setEnabled(false);
         LoginService loginService = NetContext.instance.getRetrofit().create(LoginService.class);
         String loginJson = (new Gson()).toJson(new LoginBodyJson(username, password));
         
@@ -100,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (loginResponseJson == null) {
                     pbLoading.setVisibility(View.GONE);
                     if(response.code()==401){
-                        Toast.makeText(LoginActivity.this, "error password", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "error password!", Toast.LENGTH_SHORT).show();
                     }
                 } else {
 
@@ -112,12 +112,16 @@ public class LoginActivity extends AppCompatActivity {
                         onLoginSuccess();
                     }
                 }
+
+                btLogin.setEnabled(true);
             }
 
             @Override
             public void onFailure(Call<LoginResponseJson> call, Throwable t) {
                 Log.d(TAG, String.format("onFailure %s", t));
                 pbLoading.setVisibility(View.GONE);
+                Toast.makeText(LoginActivity.this, R.string.login_error, Toast.LENGTH_SHORT).show();
+                btLogin.setEnabled(true);
             }
         });
     }

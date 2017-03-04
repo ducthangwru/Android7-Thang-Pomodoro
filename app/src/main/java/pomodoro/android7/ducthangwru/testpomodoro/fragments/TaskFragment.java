@@ -12,6 +12,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -35,6 +37,9 @@ import retrofit2.Response;
 public class TaskFragment extends Fragment {
     @BindView(R.id.rv_task)
     RecyclerView rvTask;
+    @BindView(R.id.pb_loadtask)
+    ProgressBar pbLoadTask;
+
     private TaskAdapter taskAdapter = new TaskAdapter();
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -45,22 +50,24 @@ public class TaskFragment extends Fragment {
     }
 
     private void downloadTasks() {
-        DbContext.getInstance().deleteAll();
         TaskServices getTaskService = NetContext.instance.createTaskSevice();
+        pbLoadTask.setVisibility(View.VISIBLE);
         getTaskService.getTasks("JWT "+ SharePrefs.getInstance().getAccessToken()).enqueue(new Callback<List<TaskJson>>() {
             @Override
             public void onResponse(Call<List<TaskJson>> call, Response<List<TaskJson>> response) {
-                for(TaskJson taskJson : response.body()){
+                List<TaskJson> tasks = response.body();
+                for(TaskJson taskJson : tasks){
                     if(taskJson.getColor() != null) {
                         DbContext.getInstance().addOrUpdate(taskJson);
-
                     }
                 }
+                pbLoadTask.setVisibility(View.GONE);
             }
 
             @Override
             public void onFailure(Call<List<TaskJson>> call, Throwable t) {
-
+                Toast.makeText(TaskFragment.this.getContext(), getString(R.string.cant_get_task), Toast.LENGTH_SHORT).show();
+                pbLoadTask.setVisibility(View.GONE);
             }
         });
     }
@@ -79,7 +86,7 @@ public class TaskFragment extends Fragment {
             public void onItemClick(TaskJson taskJson) {
                 TaskDetailFragment taskDetailFragment = new TaskDetailFragment();
                 taskDetailFragment.setTaskAction(new EditAction());
-                taskDetailFragment.setTitle("Edit Task");
+                taskDetailFragment.setTitle(getString(R.string.edit_task));
                 taskDetailFragment.setTask(taskJson);
                 (new SceneFragment(getActivity().getSupportFragmentManager(), R.id.fl_main)).replaceFragment(taskDetailFragment, true);
             }
@@ -104,15 +111,15 @@ public class TaskFragment extends Fragment {
     private void showDialog(final TaskJson task) {
         AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
         dialog.setTitle("DELETE");
-        dialog.setMessage("Are you sure?");
-        dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+        dialog.setMessage(R.string.are_you_sure);
+        dialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 delete(task);
             }
         });
 
-        dialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+        dialog.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
@@ -136,7 +143,7 @@ public class TaskFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<DeleteJson> call, Throwable t) {
-
+                        Toast.makeText(TaskFragment.this.getContext(), R.string.cant_delete, Toast.LENGTH_SHORT).show();
                     }
                 });
     }
