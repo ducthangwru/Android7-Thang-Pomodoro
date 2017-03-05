@@ -13,7 +13,7 @@ import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.TaskJson;
 public class DbContext {
     private Realm realm;
 
-    private DbContext(Context context) {
+    public DbContext(Context context) {
         Realm.init(context);
         realm = Realm.getDefaultInstance();
     }

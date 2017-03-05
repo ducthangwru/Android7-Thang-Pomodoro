@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pomodoro.android7.ducthangwru.testpomodoro.LSquareLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageButton
+        android:id="@+id/ib_stop"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:background="@drawable/ic_stop_white_24px"
+        android:layout_marginBottom="86dp"
+        android:layout_alignBottom="@+id/pb_time"
+        android:layout_alignParentEnd="true" />
+
+    <com.github.lzyzsd.circleprogress.DonutProgress
+        android:layout_marginLeft="50dp"
+        android:id="@+id/pb_time"
+        android:layout_width="@dimen/pb_time"
+        android:layout_height="@dimen/pb_time"
+        custom:donut_progress="0"
+        android:rotation="0"
+        android:layout_marginTop="20dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="41dp" />
+</pomodoro.android7.ducthangwru.testpomodoro.LSquareLayout>

@@ -1,5 +1,6 @@
 package pomodoro.android7.ducthangwru.testpomodoro.fragments;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,6 +16,8 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.List;
 
 import butterknife.BindView;
@@ -25,6 +28,8 @@ import pomodoro.android7.ducthangwru.testpomodoro.actions.AddAction;
 import pomodoro.android7.ducthangwru.testpomodoro.actions.EditAction;
 import pomodoro.android7.ducthangwru.testpomodoro.adapters.TaskAdapter;
 import pomodoro.android7.ducthangwru.testpomodoro.databases.DbContext;
+import pomodoro.android7.ducthangwru.testpomodoro.events.TimerCommand;
+import pomodoro.android7.ducthangwru.testpomodoro.events.TimerCommandEvent;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.NetContext;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.DeleteJson;
 import pomodoro.android7.ducthangwru.testpomodoro.networks.jsonmodels.TaskJson;
@@ -40,6 +45,8 @@ public class TaskFragment extends Fragment {
     @BindView(R.id.pb_loadtask)
     ProgressBar pbLoadTask;
 
+    private ProgressDialog dialog;
+    private  DbContext dbContext;
     private TaskAdapter taskAdapter = new TaskAdapter();
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -50,18 +57,22 @@ public class TaskFragment extends Fragment {
     }
 
     private void downloadTasks() {
+        dbContext =new DbContext(getContext());
         TaskServices getTaskService = NetContext.instance.createTaskSevice();
-        pbLoadTask.setVisibility(View.VISIBLE);
+
         getTaskService.getTasks("JWT "+ SharePrefs.getInstance().getAccessToken()).enqueue(new Callback<List<TaskJson>>() {
             @Override
             public void onResponse(Call<List<TaskJson>> call, Response<List<TaskJson>> response) {
                 List<TaskJson> tasks = response.body();
-                for(TaskJson taskJson : tasks){
-                    if(taskJson.getColor() != null) {
-                        DbContext.getInstance().addOrUpdate(taskJson);
+                if(tasks != null) {
+                    dbContext.deleteAll();
+                    for (TaskJson taskJson : tasks) {
+                        dbContext.addOrUpdate(taskJson);
                     }
+                    taskAdapter.notifyDataSetChanged();
                 }
-                pbLoadTask.setVisibility(View.GONE);
+                dialog.dismiss();
+               // pbLoadTask.setVisibility(View.GONE);
             }
 
             @Override
@@ -74,6 +85,9 @@ public class TaskFragment extends Fragment {
 
     private void setupUI(View view) {
         ButterKnife.bind(this, view);
+        dialog = new ProgressDialog(this.getContext());
+        dialog.show();
+       // pbLoadTask.setVisibility(View.VISIBLE);
         rvTask.setAdapter(taskAdapter);
         rvTask.setLayoutManager(new LinearLayoutManager(this.getContext()));
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Tasks");
@@ -95,6 +109,8 @@ public class TaskFragment extends Fragment {
             @Override
             public void onButtonClick(TaskJson task) {
                 TimeFragment timerFragment = new TimeFragment();
+                TimerCommandEvent event = new TimerCommandEvent(TimerCommand.START);
+                EventBus.getDefault().post(event);
                 ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(task.getName() + " Timer");
                 (new SceneFragment(getActivity().getSupportFragmentManager(), R.id.fl_main)).replaceFragment(timerFragment, true);
             }
